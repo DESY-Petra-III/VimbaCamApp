@@ -3,7 +3,7 @@ from app.common.keys import *
 
 import gc
 
-from vimba import Vimba, Camera, Frame, FrameStatus, VimbaCameraError, VimbaTimeout, VimbaFeatureError, intersect_pixel_formats, OPENCV_PIXEL_FORMATS, COLOR_PIXEL_FORMATS, MONO_PIXEL_FORMATS, feature, AccessMode
+from vimba import Vimba, Camera, Frame, FrameStatus, VimbaCameraError, VimbaTimeout, VimbaFeatureError, intersect_pixel_formats, OPENCV_PIXEL_FORMATS, COLOR_PIXEL_FORMATS, MONO_PIXEL_FORMATS, feature, AccessMode, PixelFormat
 
 __all__ = ["ThreadCameraAllied", "Frame"]
 
@@ -92,6 +92,8 @@ class ThreadCameraAllied(threading.Thread, Tester):
 
         self.camera_state = True
 
+        self.pixel_format = None
+
     def is_camalive(self):
         """
         Returns an indicator if the camera is alive or not
@@ -164,22 +166,34 @@ class ThreadCameraAllied(threading.Thread, Tester):
             finally:
                 # Query available, open_cv compatible pixel formats
                 # prefer color formats over monochrome formats
-                cv_fmts = intersect_pixel_formats(cam.get_pixel_formats(), OPENCV_PIXEL_FORMATS)
+                cam_fmts = cam.get_pixel_formats()
+
+
+                cv_fmts = intersect_pixel_formats(cam_fmts, OPENCV_PIXEL_FORMATS)
+                self.debug("Camera pixel formats: ({})".format(cam_fmts))
+
                 color_fmts = intersect_pixel_formats(cv_fmts, COLOR_PIXEL_FORMATS)
 
                 if color_fmts:
                     self.debug("Found color pixel formats")
                     cam.set_pixel_format(color_fmts[0])
-
+                    self.pixel_format = color_fmts[0]
                 else:
-                    mono_fmts = intersect_pixel_formats(cv_fmts, MONO_PIXEL_FORMATS)
+                    # either there is a monochrome format, or there is a possibility for PixelFormat.BayerRG8, which can be converted
 
-                    if mono_fmts:
-                        self.debug("Found monocolor pixel formats")
-                        cam.set_pixel_format(mono_fmts[0])
+                    if PixelFormat.BayerRG8 in cam_fmts:
+                        self.debug("Found PixelFormat.BayerRG8 pixel formats")
+                        self.pixel_format = PixelFormat.BayerRG8
                     else:
-                        res = False
-                        self.handle_error('Camera does not support a OpenCV compatible format natively. Abort.')
+                        mono_fmts = intersect_pixel_formats(cv_fmts, MONO_PIXEL_FORMATS)
+
+                        if mono_fmts:
+                            self.debug("Found monocolor pixel formats")
+                            cam.set_pixel_format(mono_fmts[0])
+                            self.pixel_format = mono_fmts[0]
+                        else:
+                            res = False
+                            self.handle_error('Camera does not support a OpenCV compatible format natively. Abort.')
         return res
 
     def run(self):
@@ -219,6 +233,8 @@ class ThreadCameraAllied(threading.Thread, Tester):
                 # handle an issue of camera accessibility
                 self.handle_error("Camera is not available")
                 return
+            except VimbaCameraError:
+                self.handle_error("Issue with reading the camera. Is VimbaViewer is running?")
 
     def handle_error(self, msg):
         """
@@ -229,10 +245,9 @@ class ThreadCameraAllied(threading.Thread, Tester):
         self.error(msg)
         if self.feedback is not None:
             try:
-                self.feedback.reportCameraState(False)
                 self.feedback.reportStopAcq(msg=msg)
-            except AttributeError:
-                pass
+            except AttributeError as e:
+                self.debug("Error while handling error: {}".format(e))
         self.setCamAlive(False)
 
     def setCamAlive(self, v):
@@ -328,7 +343,14 @@ class ThreadCameraAllied(threading.Thread, Tester):
                     try:
                         self.debug("Obtained frame {}".format(frame))
                         if frame.get_status() == FrameStatus.Complete:
-                            self.feedback.reportNewFrame(frame)
+                            img = None
+
+                            if self.pixel_format == PixelFormat.BayerRG8:
+                                img = frame.as_numpy_ndarray()
+                                img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)
+                            else:
+                                img = frame.as_opencv_image()
+                            self.feedback.reportNewFrame(img)
                             pass
                     except (RuntimeError, AttributeError):
                         pass

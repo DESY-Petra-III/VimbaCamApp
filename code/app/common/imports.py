@@ -17,7 +17,6 @@ import re
 import logging
 
 from qtpy import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
-import pyqtgraph as graph
 
 # import PyTango as pt
 

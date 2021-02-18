@@ -1,5 +1,7 @@
 import os
 from app.config.keys import *
+from app.common.keys import *
+
 import configparser
 import json
 from threading import Lock
@@ -36,6 +38,9 @@ CONFIG_STORAGE = {
 
     # Profile source - in terms of a plugin (pluginbase) - tuple(PluginBase, PluginSource, Description, Path)
     PROFILE_SOURCE: None,
+
+    # specific camera feature
+    CAMERA_PIXELFORMAT: None
 }
 
 CONFIG_INSTANCE = None
@@ -55,6 +60,8 @@ class Config(object):
         self.config = configparser.ConfigParser()
         self.config_lock = Lock()
         self.configfn = None
+
+        self.camera_pixelformat_lock = Lock()
 
     def setConfigFile(self, id):
         """
@@ -316,6 +323,10 @@ class Config(object):
     def setFrameColorIndex(self, v):
         self.setConfiguration(FRAME_COLORINDEX, v)
 
+    def setCameraPixelFormat(self, v):
+        with self.camera_pixelformat_lock:
+            self.setConfiguration(CAMERA_PIXELFORMAT, v)
+
     def checkBasicPaths(self):
         global CONFIG_STORAGE
 
@@ -337,6 +348,12 @@ class Config(object):
                 self.printBulletMsg02("Trying to create directory ({} : {})".format(key, d))
                 os.mkdir(d)
                 pass
+
+    def getCameraPixelFormat(self):
+        res = None
+        with self.camera_pixelformat_lock:
+            res = self.getConfiguration(CAMERA_PIXELFORMAT)
+        return res
 
     def getFolderStartup(self):
         return self.getConfiguration(FOLDER_STARTUP)

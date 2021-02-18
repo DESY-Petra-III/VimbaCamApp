@@ -388,7 +388,7 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         tframe = copy.deepcopy(frame)
         self.signnewframe.emit(tframe)
 
-    def processFrame(self, frame: Frame):
+    def processFrame(self, frame):
         """
         Processes data of a frame
         :param frame:
@@ -397,11 +397,8 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         self.debug("Processing a frame")
 
         with self.lock:
-            newframe = copy.deepcopy(frame)
-
-            self.debug("Received a new frame {}; id: {}".format(newframe, newframe.get_id()))
-
-            img = newframe.as_opencv_image()
+            # image processing is conducted in the thread, here we receive a prepared numpy array
+            img = copy.deepcopy(frame)
 
             scene: QtWidgets.QGraphicsScene = self.parent().getScene()
             view: QtWidgets.QGraphicsView = self.parent().getView()

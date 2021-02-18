@@ -1,5 +1,6 @@
 from app.common.imports import *
 from app.common.keys import *
+import app.config.main_config as config
 
 from vimba import Vimba, Camera, Frame, FrameStatus, VimbaCameraError, VimbaTimeout, VimbaFeatureError, intersect_pixel_formats, OPENCV_PIXEL_FORMATS, COLOR_PIXEL_FORMATS, MONO_PIXEL_FORMATS, feature, AccessMode
 
@@ -27,6 +28,8 @@ class ThreadCameraAlliedTest(threading.Thread, Tester):
         Tester.__init__(self, def_file="{}-{}".format(self.__class__.__name__, threading.current_thread().name))
 
         self.debug("Starting thread {}".format(id))
+
+        self.config = config.get_instance()
 
         self.camid = id
 
@@ -111,6 +114,10 @@ class ThreadCameraAlliedTest(threading.Thread, Tester):
             ip = cam.get_feature_by_name(CAMERA_CURRENTIP)
             if isinstance(ip.get(), int):
                 ip = ipaddress.IPv4Address(ip.get()).reverse_pointer.replace(".in-addr.arpa", "")
+
+            pixel_format = cam.get_feature_by_name(CAMERA_PIXELFORMAT)
+            self.debug("Pixel Format: {}".format(pixel_format))
+            self.config.setCameraPixelFormat(pixel_format)
         except VimbaFeatureError:
             pass
 
