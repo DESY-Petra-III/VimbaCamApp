@@ -46,3 +46,6 @@ On top of the standard python3 libraries, additional libraries are required:
 Vimba API libraries are available within [VimbaSDK](https://www.alliedvision.com/en/products/software.html)  as well as the corresponding documentation describing the details of SDK installation.
 
 Windows users should setup *VIMBA_HOME* environment variable, while LINUX users take advantage of *GENICAM_GENTL64_PATH* environment variable to locate corresponding libraries.
+
+## Licensing
+The license of the code - LGPL v3. For licensing of the PyQt5, VimbaSDK we refer to the original websites.
