@@ -13,7 +13,6 @@ The project has two folders:
 
  - **[code](https://github.com/DESY-Petra-III/VimbaCamApp/tree/main/code)** - the PyQt application itself
  - **[example_remote_acess](https://github.com/DESY-Petra-III/VimbaCamApp/tree/main/examples_remote_access)** - code illustrating remote access to the application using [ZMQ](https://zeromq.org/languages/python/) library.
- - 
 
 ## Principle of operation
 
