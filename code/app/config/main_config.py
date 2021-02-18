@@ -72,6 +72,7 @@ class Config(object):
         tdict = {
             MARKER_SHAPE: "0",
             MARKER_SIZE: "[300.0, 300.0]",
+            MARKER_POSITION: "[0.0, 0.0]",
             MARKER_LINEWIDTH: "3",
             MARKER_COLORINDEX: "223",
             FRAME_COLORINDEX: "223",
@@ -133,11 +134,12 @@ class Config(object):
         res = None
         try:
             v = self.config.get(self.DEFAULT_SECTION, k)
+            # print("{}:{}".format(k, v))
             if k == CAMERA_NICKNAME:
                 v = '"{}"'.format(v)
             res = json.loads(v)
         except json.JSONDecodeError as e:
-            print("Json error while parsing config file ({})".format(e))
+            print("Json error while parsing config file ({}:{})".format(k, e))
         return res
 
     def setcfValue(self, k, v):
@@ -159,6 +161,15 @@ class Config(object):
         """
         print("Size {}".format(v))
         self.setcfValue(MARKER_SIZE, v)
+
+    def setcfMarkerPosition(self, v):
+        """
+        Sets config value for marker size
+        :param k:
+        :return:
+        """
+        print("Position {}".format(v))
+        self.setcfValue(MARKER_POSITION, v)
 
     def setcfMarkerLinewidth(self, v):
         """
@@ -229,6 +240,14 @@ class Config(object):
         :return:
         """
         res = self.getcfValue(MARKER_SIZE)
+        return res
+
+    def getcfMarkerPosition(self):
+        """
+        Returns marker position
+        :return:
+        """
+        res = self.getcfValue(MARKER_POSITION)
         return res
 
     def getcfMarkerLinewidth(self):

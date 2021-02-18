@@ -30,8 +30,9 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
     SHAPE_BOUNDS = 2
     SHAPE_RECT = 3
 
-    def __init__(self, shape=None, x=None, y=None, width=None, height=None,
+    def __init__(self, shape=None, dx=None, dy=None, width=None, height=None,
                  color=None, penwidth=None, parent=None, feedback=None):
+
         QtWidgets.QGraphicsItemGroup.__init__(self, parent=parent)
 
         self.feedback = feedback
@@ -47,8 +48,8 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         self.w = width
         self.h = height
 
-        self.x = x
-        self.y = y
+        self.x = None
+        self.y = None
 
         # report object
         self.emitter = None
@@ -61,11 +62,11 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         self.shape_cross = None
 
         # prepare a SHAPE
-        self.prepShape()
+        self.prepShape(dx=dx, dy=dy)
 
         self.bgrabbed = False
 
-    def prepShape(self):
+    def prepShape(self, dx=None, dy=None):
         """
         Prepares a shape of the marker
         :return:
@@ -82,11 +83,8 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         self.prepBounds(rect)
         self.prepCross(rect)
 
-        tlst = list(self.getMarkerShapes())
-        tlst.append(self.shape_cross)
-
-        for (i, el) in enumerate(self.childItems()):
-            if el == self.shape_cross:
+        for (i, el) in enumerate(self.getChildren()):
+            if el == self.shape_cross or el is None:
                 continue
 
             if el is not None:
@@ -97,6 +95,15 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
                     el.hide()
                 else:
                     el.show()
+
+        tdx, tdy = 0., 0.
+        if dx is not None:
+            tdx = dx
+        if dy is not None:
+            tdy = dy
+
+        # apply a shift
+        self.doMoveBy(tdx, tdy)
 
     def showFrame(self, bstate=True):
         """
@@ -188,12 +195,19 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
             except AttributeError:
                 pass
 
+    def getChildren(self):
+        """
+        Returns a list of children
+        """
+        res = self.childItems()
+        return res
+
     def mouseGrab(self):
         """
         Grab mouse
         :return:
         """
-        self.bgrabbed = False
+        self.bgrabbed = True
         self.grabMouse()
 
     def cleanMouseGrab(self):
@@ -224,6 +238,7 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         :return:
         """
         if ev.button() == QtCore.Qt.LeftButton and self.bgrabbed:
+            self.applyChangeXY()
             self.cleanMouseGrab()
         elif ev.button() == QtCore.Qt.RightButton:
             if isinstance(self.emitter, MarkerSignal):
@@ -240,6 +255,8 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         dp = ev.scenePos() - ev.lastScenePos()
         dx, dy = dp.x(), dp.y()
 
+        self.registerChangeXY(dx, dy)
+
         self.moveBy(dx, dy)
         self.update()
 
@@ -251,8 +268,8 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         """
         self.penwidth = v
 
-        for el in self.childItems():
-            if isinstance(el, CrossItem):
+        for el in self.getChildren():
+            if isinstance(el, CrossItem) or el is None:
                 continue
             el.changePen(width=v)
             self.config.setcfMarkerLinewidth(v)
@@ -263,7 +280,9 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         :param v:
         :return:
         """
-        for el in self.childItems():
+        for el in self.getChildren():
+            if el is None:
+                continue
             el.changePen(color=v)
 
     def getMarkerShapes(self):
@@ -271,7 +290,7 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         Returns marker shapes
         :return:
         """
-        return (self.shape_ellipse, self.shape_bounds, self.shape_rect)
+        return (self.shape_ellipse, self.shape_bounds, self.shape_rect, None)
 
     def changeMarkerShapeByStep(self, step=1, direction=1):
         """
@@ -292,13 +311,13 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
 
         cnt = 0
 
-        for (i, el) in enumerate(self.childItems()):
+        for (i, el) in enumerate(self.getChildren()):
             if isinstance(el, CrossItem):
                 continue
 
-            if cnt != self.shapenum:
+            if cnt != self.shapenum and el is not None:
                 el.hide()
-            else:
+            elif el is not None:
                 el.show()
                 self.config.setcfMarkerShape(i)
             cnt += 1
@@ -344,3 +363,27 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         """
         self.prepareGeometryChange()
         self.moveBy(dx, dy)
+
+        self.registerChangeXY(dx, dy)
+        self.applyChangeXY()
+
+
+    def registerChangeXY(self, dx=None, dy=None):
+        """
+        Registers changes applied to the marker
+        """
+        #print("Dx: {}; Dy: {}; x: {}; y: {}".format(dx, dy, self.x, self.y))
+        if dx is not None:
+            self.x += dx
+
+        if dy is not None:
+            self.y += dy
+
+        #print("Dx: {}; Dy: {}; x: {}; y: {}".format(dx, dy, self.x, self.y))
+
+    def applyChangeXY(self):
+        """
+        Saves the changes of dx/dy into the configuration file
+        """
+        #print("Saving values {}".format([self.x, self.y]))
+        self.config.setcfMarkerPosition([self.x, self.y])

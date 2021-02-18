@@ -249,7 +249,19 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         if not isinstance(shape, int):
             shape = None
 
-        self.marker = MarkerItem(feedback=self, penwidth=pw, width=w, height=h, shape=shape)
+        dx, dy = 0., 0.
+        shift = self.config.getcfMarkerPosition()
+        if isinstance(shift, tuple) or isinstance(shift, list) and len(shift)==2:
+            tv = shift[0]
+            if self.testInt(tv) or self.testFloat(tv):
+                dx = tv
+
+            tv = shift[1]
+            if self.testInt(tv) or self.testFloat(tv):
+                dy = tv
+
+
+        self.marker = MarkerItem(feedback=self, dx=dx, dy=dy, penwidth=pw, width=w, height=h, shape=shape)
 
         scene.addItem(self.marker)
         view.setRenderHints(QtGui.QPainter.Antialiasing | QtGui.QPainter.SmoothPixmapTransform)
