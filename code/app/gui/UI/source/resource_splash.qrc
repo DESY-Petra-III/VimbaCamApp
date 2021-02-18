@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="bkg_image">
+    <file>splash_screen_02.png</file>
+  </qresource>
+</RCC>
