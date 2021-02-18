@@ -19,8 +19,8 @@ def test_params(params):
 
     msg = ""
     try:
-        id = params.id
-        zmq = params.zmq
+        id = str(params.id)
+        zmq = str(params.zmq)
 
         pid = re.compile("^DEV_[a-zA-Z0-9]{12}$", re.IGNORECASE)
         pzmq = re.compile("^tcp://[^\:]:[0-9]+$", re.IGNORECASE)
