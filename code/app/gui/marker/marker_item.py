@@ -224,10 +224,12 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
         :param ev:
         :return:
         """
-        # print("Pressed")
+        print("Pressed {}".format(ev.button()))
         if ev.button() == QtCore.Qt.LeftButton:
             ev.accept()
             self.mouseGrab()
+        elif ev.button() == QtCore.Qt.RightButton:
+            ev.accept()
         else:
             ev.ignore()
 
