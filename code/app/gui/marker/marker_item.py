@@ -313,7 +313,7 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
 
         cnt = 0
 
-        for (i, el) in enumerate(self.getChildren()):
+        for (i, el) in enumerate(self.getMarkerShapes()):
             if isinstance(el, CrossItem):
                 continue
 
@@ -321,7 +321,8 @@ class MarkerItem(QtWidgets.QGraphicsItemGroup):
                 el.hide()
             elif el is not None:
                 el.show()
-                self.config.setcfMarkerShape(i)
+
+            self.config.setcfMarkerShape(i)
             cnt += 1
 
     def doHResizeBy(self, value):
