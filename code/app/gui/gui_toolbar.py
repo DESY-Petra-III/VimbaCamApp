@@ -58,6 +58,10 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         self.initColorFrame()
         self.initColorMarker()
 
+        self.lbl_gain.setCursor(QtCore.Qt.PointingHandCursor)
+        self.lbl_exposure.setCursor(QtCore.Qt.PointingHandCursor)
+
+
     def settingsFromConfig(self):
         """
         Prepare settings from config file
@@ -355,7 +359,8 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         :param ev:
         :return:
         """
-        if ev.button() == QtCore.Qt.RightButton:
+        btn = ev.button()
+        if btn == QtCore.Qt.RightButton or btn == QtCore.Qt.LeftButton:
             if self.ctrl is not None:
                 try:
                     if self.testExposureGainEnabled():
