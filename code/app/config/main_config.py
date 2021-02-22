@@ -16,6 +16,8 @@ CONFIG_STORAGE = {
     FOLDER_IMAGES: None,
     FOLDER_HTML: None,
 
+    LOGO_FILE: None,
+
     # configuration
     SETTINGS: None,  # QSettings
     CAMERA_ID: None,  # Camera ID - used for storing different config files
@@ -325,6 +327,7 @@ class Config(object):
         self.setConfiguration(FOLDER_PROFILES, v)
 
     def setFolderImages(self, v):
+        self.setConfiguration(LOGO_FILE, os.path.join(v, "logo.png"))
         self.setConfiguration(FOLDER_IMAGES, v)
 
     def setFolderHtml(self, v):
@@ -349,7 +352,8 @@ class Config(object):
     def checkBasicPaths(self):
         global CONFIG_STORAGE
 
-        l = (FOLDER_STARTUP,
+        l = (
+             FOLDER_STARTUP,
              FOLDER_LOG,
              FOLDER_PLUGINS,
              FOLDER_PROFILES,
@@ -415,6 +419,9 @@ class Config(object):
 
     def getFolderHtml(self):
         return self.getConfiguration(FOLDER_HTML)
+
+    def getLogoFile(self):
+        return self.getConfiguration(LOGO_FILE)
 
     def printHeaderMsg(self, msg):
         """

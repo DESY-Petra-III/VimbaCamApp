@@ -125,7 +125,7 @@ class Starter(Tester):
             c.printBulletMsg01("Config path ({})".format(path))
             c.setFolderProfiles(path)
 
-            path = os.path.join(basepath, "config")
+            path = os.path.join(basepath, "app", "images")
             c.printBulletMsg01("Config path ({})".format(path))
             c.setFolderImages(path)
 

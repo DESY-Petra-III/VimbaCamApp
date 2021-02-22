@@ -1,4 +1,5 @@
 from app.common.imports import *
+import app.config.main_config as config
 
 from  app.ctrl import *
 
@@ -17,6 +18,9 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
     def __init__(self, id, zmq, parent=None):
         QtWidgets.QMainWindow.__init__(self,parent=parent)
         Tester.__init__(self, def_file="{}".format(self.__class__.__name__.lower()))
+
+        # config
+        self.config = config.get_instance()
 
         # params
         self.zmq = zmq
@@ -63,6 +67,22 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
         self.view.setScene(self.scene)
 
         self.setCentralWidget(self.cwidget)
+
+        # sets application icon
+        tqimage = QtGui.QImage()
+        fn = self.config.getLogoFile()
+
+        if tqimage.load(self.config.getLogoFile()):
+            qi = QtGui.QIcon()
+            qi.addFile(fn)
+
+            # windows workaround
+            if os.name == 'nt':
+                import ctypes
+                myappid = 'desy.petra-III.vimbacam.stable'  # arbitrary string
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+            self.setWindowIcon(qi)
 
     def prepToolbar(self):
         """
