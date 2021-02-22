@@ -63,7 +63,7 @@ def main():
 
     # start of the main program
     if test:
-        s = Starter(sys.argv, params, debug_level=logging.INFO, file_logging=False)
+        s = Starter(sys.argv, __file__, params, debug_level=logging.INFO, file_logging=False)
 
 if __name__ == "__main__":
     main()

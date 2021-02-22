@@ -10,7 +10,7 @@ class Starter(Tester):
     # delay for dummy messages
     DUMMY_DELAY = 0.3
 
-    def __init__(self, argv, args, debug_level=None, file_logging=True):
+    def __init__(self, argv, script_fn, args, debug_level=None, file_logging=True):
         # setup default debug level
         if debug_level is not None:
             Tester.setDefaultLogging(debug_level)
@@ -21,7 +21,7 @@ class Starter(Tester):
         argv = self.prepare_additional_arguments(argv)
         self.config = config.get_instance()
 
-        self.prepare_paths(argv)
+        self.prepare_paths(argv, script_fn)
         self.config.setConfigFile(args.id)
 
         # cleaning logs
@@ -87,12 +87,19 @@ class Starter(Tester):
         """
         return argv
 
-    def prepare_paths(self, argv):
+    def prepare_paths(self, argv, script_fn):
         """
         prepares the most important paths
         :return:
         """
         basepath = os.path.dirname(argv[0])
+
+        if len(basepath) == 0:
+            basepath = os.path.dirname(script_fn)
+
+        if len(basepath) == 0:
+            basepath = os.getcwd()
+
 
         c = self.config
 
