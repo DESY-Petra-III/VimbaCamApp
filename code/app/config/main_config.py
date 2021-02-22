@@ -353,7 +353,7 @@ class Config(object):
              FOLDER_LOG,
              FOLDER_PLUGINS,
              FOLDER_PROFILES,
-             # FOLDER_IMAGES,
+             FOLDER_IMAGES,
              FOLDER_HTML,
              )
 

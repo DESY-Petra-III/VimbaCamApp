@@ -125,6 +125,10 @@ class Starter(Tester):
             c.printBulletMsg01("Config path ({})".format(path))
             c.setFolderProfiles(path)
 
+            path = os.path.join(basepath, "config")
+            c.printBulletMsg01("Config path ({})".format(path))
+            c.setFolderImages(path)
+
             c.checkBasicPaths()
 
     def setDummyMessage(self):
