@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(745, 49)
+        Form.resize(1123, 56)
         Form.setMinimumSize(QtCore.QSize(400, 49))
         Form.setStyleSheet("QLabel#lbl_exposure {padding-right:0px; padding-left:20px;}\n"
 "QLabel#lbl_gain {padding-right:20px; padding-left:0px;}")
@@ -110,13 +110,30 @@ class Ui_Form(object):
         self.lbl_gain.setEnabled(False)
         self.lbl_gain.setObjectName("lbl_gain")
         self.horizontalLayout.addWidget(self.lbl_gain)
+        self.stw_plugins = QtWidgets.QStackedWidget(Form)
+        self.stw_plugins.setObjectName("stw_plugins")
+        self.stw_plugin_off = QtWidgets.QWidget()
+        self.stw_plugin_off.setObjectName("stw_plugin_off")
+        self.stw_plugins.addWidget(self.stw_plugin_off)
+        self.stw_plugin_on = QtWidgets.QWidget()
+        self.stw_plugin_on.setObjectName("stw_plugin_on")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.stw_plugin_on)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.cmb_plugins = QtWidgets.QComboBox(self.stw_plugin_on)
+        self.cmb_plugins.setObjectName("cmb_plugins")
+        self.horizontalLayout_2.addWidget(self.cmb_plugins)
+        self.horizontalLayout_2.setStretch(0, 50)
+        self.stw_plugins.addWidget(self.stw_plugin_on)
+        self.horizontalLayout.addWidget(self.stw_plugins)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
         self.lbl_zmq = QtWidgets.QLabel(Form)
         self.lbl_zmq.setObjectName("lbl_zmq")
         self.horizontalLayout.addWidget(self.lbl_zmq)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
 
         self.retranslateUi(Form)
+        self.stw_plugins.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -142,5 +159,6 @@ class Ui_Form(object):
         self.lbl_exposure.setText(_translate("Form", "Exposure /"))
         self.lbl_gain.setToolTip(_translate("Form", "Exposure/Gain control"))
         self.lbl_gain.setText(_translate("Form", "Gain"))
+        self.cmb_plugins.setToolTip(_translate("Form", "Select a plugin for movement"))
         self.lbl_zmq.setText(_translate("Form", "ZMQ"))
 import app.gui.UI.toolbar_rc

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>745</width>
-    <height>49</height>
+    <width>1123</width>
+    <height>56</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -73,7 +73,7 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="../images/toolbar.qrc">
+      <iconset resource="../../../../../camera_app/app/gui/images/toolbar.qrc">
        <normaloff>:/root/zoom_in.png</normaloff>
        <normalon>:/root/zoom_in.png</normalon>:/root/zoom_in.png</iconset>
      </property>
@@ -100,7 +100,7 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="../images/toolbar.qrc">
+      <iconset resource="../../../../../camera_app/app/gui/images/toolbar.qrc">
        <normaloff>:/root/zoom_out.png</normaloff>
        <normalon>:/root/zoom_out.png</normalon>:/root/zoom_out.png</iconset>
      </property>
@@ -127,7 +127,7 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="../images/toolbar.qrc">
+      <iconset resource="../../../../../camera_app/app/gui/images/toolbar.qrc">
        <normaloff>:/root/fullscreen.png</normaloff>
        <normalon>:/root/fullscreen.png</normalon>:/root/fullscreen.png</iconset>
      </property>
@@ -154,7 +154,7 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="../images/toolbar.qrc">
+      <iconset resource="../../../../../camera_app/app/gui/images/toolbar.qrc">
        <normaloff>:/root/outline_save_alt_black_48dp.png</normaloff>:/root/outline_save_alt_black_48dp.png</iconset>
      </property>
      <property name="iconSize">
@@ -282,10 +282,25 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="lbl_zmq">
-     <property name="text">
-      <string>ZMQ</string>
+    <widget class="QStackedWidget" name="stw_plugins">
+     <property name="currentIndex">
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="stw_plugin_off"/>
+     <widget class="QWidget" name="stw_plugin_on">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="50">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="cmb_plugins">
+         <property name="toolTip">
+          <string>Select a plugin for movement</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -301,10 +316,17 @@ QLabel#lbl_gain {padding-right:20px; padding-left:0px;}</string>
      </property>
     </spacer>
    </item>
+   <item>
+    <widget class="QLabel" name="lbl_zmq">
+     <property name="text">
+      <string>ZMQ</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>
-  <include location="../images/toolbar.qrc"/>
+  <include location="../../../../../camera_app/app/gui/images/toolbar.qrc"/>
  </resources>
  <connections/>
 </ui>

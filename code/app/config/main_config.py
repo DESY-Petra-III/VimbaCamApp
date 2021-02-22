@@ -16,7 +16,11 @@ CONFIG_STORAGE = {
     FOLDER_IMAGES: None,
     FOLDER_HTML: None,
 
+    # logo of the file
     LOGO_FILE: None,
+
+    # set of plugins
+    MOVEPLUGINS: [],
 
     # configuration
     SETTINGS: None,  # QSettings
@@ -153,7 +157,6 @@ class Config(object):
         with self.config_lock:
             self.config.set(self.DEFAULT_SECTION, k, json.dumps(v))
             self.write_config()
-
 
     def setcfMarkerSize(self, v):
         """
@@ -349,6 +352,9 @@ class Config(object):
         with self.camera_pixelformat_lock:
             self.setConfiguration(CAMERA_PIXELFORMAT, v)
 
+    def setPlugins(self, v):
+        self.setConfiguration(MOVEPLUGINS, v)
+
     def checkBasicPaths(self):
         global CONFIG_STORAGE
 
@@ -378,8 +384,14 @@ class Config(object):
             res = self.getConfiguration(CAMERA_PIXELFORMAT)
         return res
 
+    def getPlugins(self):
+        return self.getConfiguration(MOVEPLUGINS)
+
     def getFolderStartup(self):
         return self.getConfiguration(FOLDER_STARTUP)
+
+    def getFolderPlugins(self):
+        return self.getConfiguration(FOLDER_PLUGINS)
 
     def getMainLogFile(self):
         return self.getConfiguration(LOGGING_MAIN_FILE)

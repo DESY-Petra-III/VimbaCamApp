@@ -15,6 +15,7 @@ import cv2
 import numpy as np
 import re
 import logging
+import pluginbase
 
 from qtpy import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
 

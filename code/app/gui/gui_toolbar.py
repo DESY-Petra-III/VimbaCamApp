@@ -136,6 +136,39 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         self.lbl_gain.mouseReleaseEvent = self.processExposureGain
         self.lbl_exposure.mouseReleaseEvent = self.processExposureGain
 
+        # process plugin list - hide or show controls
+        plugins = self.config.getPlugins()
+        if len(plugins) == 0:
+            self.stw_plugins.hide()
+        else:
+            if self.stw_plugins.isHidden():
+                self.stw_plugins.show()
+            tl = self.stw_plugin_on.layout()
+
+            self.qbtns = QtWidgets.QButtonGroup(parent=self.stw_plugin_on)
+            self.rdbtn_frame = QtWidgets.QRadioButton("F.", self)
+            self.rdbtn_frame.setToolTip("Use frame center as reference")
+
+            self.rdbtn_marker = QtWidgets.QRadioButton("M.", self)
+            self.rdbtn_marker.setToolTip("Use marker cross as reference")
+
+            self.qbtns.addButton(self.rdbtn_frame)
+            self.qbtns.addButton(self.rdbtn_marker)
+
+            tl.addWidget(self.rdbtn_frame)
+            tl.addWidget(self.rdbtn_marker)
+            self.rdbtn_frame.setChecked(True)
+
+            for plugin in plugins:
+                self.info(plugin)
+                msg = plugin.get_description()
+                self.cmb_plugins.addItem(msg)
+
+            # connect signals for the frame, marker and plugin selector
+            self.rdbtn_frame.toggled.connect(self.processFrameReference)
+            self.rdbtn_marker.toggled.connect(self.processMarkerReference)
+            self.cmb_plugins.currentIndexChanged.connect(self.processPluginIndex)
+
     def initColorFrame(self):
         """
         Initializes widget for color choosing
@@ -460,3 +493,35 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         """
         if isinstance(self._zmqtimer, QtCore.QTimer) and self._zmqtimer.isActive():
             self._zmqtimer.stop()
+
+    def processMarkerReference(self, bstate):
+        """
+        Sets marker reference - passes values to controller
+        """
+        if self.rdbtn_marker.isChecked():
+            try:
+                if self.ctrl is not None:
+                    self.ctrl.processMarkerReference()
+            except AttributeError:
+                pass
+
+    def processFrameReference(self, bstate):
+        """
+        Sets marker reference - passes values to controller
+        """
+        if self.rdbtn_frame.isChecked():
+            try:
+                if self.ctrl is not None:
+                    self.ctrl.processFrameReference()
+            except AttributeError:
+                pass
+
+    def processPluginIndex(self, index):
+        """
+        Processes a change of the plugin index - passes values to controller
+        """
+        try:
+            if self.ctrl is not None:
+                self.ctrl.processPluginIndex(index)
+        except AttributeError:
+            pass

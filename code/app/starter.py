@@ -68,6 +68,9 @@ class Starter(Tester):
             # start splash
             # processing initialization
             self.spl.show()
+
+            self.load_plugins()
+
             self.setDummyMessage()
 
             self.main_wnd = MainWindow(self.camera_id, self.zmq)
@@ -79,6 +82,39 @@ class Starter(Tester):
         except StarterException:
             self.debug("Exit on initial tests")
             sys.exit(-1)
+
+    def load_plugins(self):
+        """
+        Loads plugins if available - plugins for click & move
+        """
+        self.plugin_base = pluginbase.PluginBase(package='localapp')
+
+        plugin_dir = self.config.getFolderPlugins()
+        self.info("Plugin directory ({})".format(plugin_dir))
+
+        plugin_source = self.plugin_source = self.plugin_base.make_plugin_source(searchpath=[plugin_dir])
+        self.info("Plugin source ({})".format(plugin_source.list_plugins()))
+
+        tplugins = []
+        with plugin_source:
+            for plug_name in plugin_source.list_plugins():
+                p = re.compile("^{}_plugin_[0-9]+".format(self.camera_id), re.IGNORECASE)
+                try:
+                    if p.match(plug_name):
+                        tplug = plugin_source.load_plugin(plug_name)
+
+                        # perform a test for the proper plugin - it should have a number of functions
+                        t1, t2, t3 = tplug.get_version, tplug.move_xy, tplug.get_description
+
+                        self.info("Plugin ({}) is valid".format(plug_name))
+
+                        tplugins.append(tplug)
+                except (ImportError, AttributeError, Exception) as e:
+                    self.error("Plugin ({}) is invalid: {}".format(plug_name, e))
+
+        # sets plugins
+        if len(tplugins) > 0:
+            self.config.setPlugins(tplugins)
 
     def prepare_additional_arguments(self, argv):
         """
