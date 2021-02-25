@@ -34,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
 
         self.prepToolbar()
         self.prepStatusBar()
+        self.prepShortcuts()
 
         self._tid = self.startTimer(self.DELAY_TIMER)
 
@@ -83,6 +84,22 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
                 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
             self.setWindowIcon(qi)
+
+    def prepShortcuts(self):
+        """
+        Prepares shortcuts to be passed to the controller - zoom in/out maximize view
+        """
+        self._sc_zoomframe1 = QtWidgets.QShortcut(QtCore.Qt.Key_A, self)
+        self._sc_zoomframe2 = QtWidgets.QShortcut(QtGui.QKeySequence("*"), self)
+        self._sc_zoomin = QtWidgets.QShortcut(QtGui.QKeySequence("+"), self)
+        self._sc_zoomout = QtWidgets.QShortcut(QtGui.QKeySequence("-"), self)
+        self._sc_showmenu = QtWidgets.QShortcut(QtCore.Qt.Key_M, self)
+
+        self._sc_zoomframe1.activated.connect(self.processZoomFrame)
+        self._sc_zoomframe2.activated.connect(self.processZoomFrame)
+        self._sc_zoomin.activated.connect(self.processZoomIn)
+        self._sc_zoomout.activated.connect(self.processZoomOut)
+        self._sc_showmenu.activated.connect(self.processShowMarkerMenu)
 
     def prepToolbar(self):
         """
@@ -143,6 +160,9 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
         self.view.wheelEvent = self.processViewWheelEvent
         self.view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.view.keyPressEvent = self.processViewKeyPress
+        self.view.keyReleaseEvent = self.processViewKeyRelease
 
         self.show()
 
@@ -249,3 +269,74 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
                 self.debug("Added rect")
             else:
                 self.framerect.setRect(br)
+
+    def processViewKeyPress(self, ev: QtGui.QKeyEvent):
+        """
+        Processes the keypress event - looks for familiar patterns
+        """
+        if self.toolbarw.getPlayStopState() and ev.key() == QtCore.Qt.Key_Control:
+            try:
+                if self.ctrl is not None:
+                    self.ctrl.processViewCtrlEvent(True)
+                    ev.accept()
+            except AttributeError:
+                pass
+        QtWidgets.QGraphicsView.keyPressEvent(self.view, ev)
+
+    def processViewKeyRelease(self, ev: QtGui.QKeyEvent):
+        """
+        Processes the keypress event - looks for familiar patterns
+        """
+        if self.toolbarw.getPlayStopState() and ev.key() == QtCore.Qt.Key_Control:
+            try:
+                if self.ctrl is not None:
+                    self.ctrl.processViewCtrlEvent(False)
+                    ev.accept()
+            except AttributeError:
+                pass
+        QtWidgets.QGraphicsView.keyPressEvent(self.view, ev)
+
+    def processZoomFrame(self):
+        """
+        Activates the zoom frame event
+        """
+        self.debug("Pressed Zoom Frame")
+        try:
+            if self.ctrl is not None:
+                self.ctrl.processZoomFrame()
+        except AttributeError:
+            pass
+
+    def processZoomIn(self):
+        """
+        Activates the zoom in event
+        """
+        try:
+            self.debug("Pressed Zoom In")
+            if self.ctrl is not None:
+                self.ctrl.processZoomIn()
+        except AttributeError:
+            pass
+
+    def processZoomOut(self):
+        """
+        Activates the zoom out event
+        """
+        try:
+            self.debug("Pressed Zoom out")
+            if self.ctrl is not None:
+                self.ctrl.processZoomOut()
+        except AttributeError:
+            pass
+
+
+    def processShowMarkerMenu(self):
+        """
+        Initiates event which should show marke menu
+        """
+        try:
+            self.debug("Pressed show marker")
+            if self.ctrl is not None:
+                self.ctrl.processShowMarkerMenu()
+        except AttributeError:
+            pass

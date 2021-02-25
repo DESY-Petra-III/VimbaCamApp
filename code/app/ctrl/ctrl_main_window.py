@@ -150,6 +150,9 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         self.thpool = QtCore.QThreadPool(parent=self)
         self.thpool.setMaxThreadCount(self.THREADPOOL_MAXNUM)
 
+        # flag controlling if CTRL was pressed prior to a mouse click
+        self.bviewctrl = False
+
     def recordCameraGainExposure(self, gain=None, exposure=None):
         """
         Records camera gain or exposure using a threading lock for internal use
@@ -947,3 +950,18 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
                 self.reportStatusMessage("File saving canceled")
         else:
             self.reportStatusMessage("Error: no image to save")
+
+    def processViewCtrlEvent(self, v: bool):
+        """
+        Keeps track of CTRL key pressed - used for click events handling inside the viewport
+        """
+        self.debug("Ctrl state ({})".format(v))
+        self.bviewctrl = v
+
+    def processShowMarkerMenu(self):
+        """
+        Processes the show marker menu
+        """
+        self.info("Pressed show marker")
+        ev = QtGui.QCursor.pos()
+        self.processMarkerMenu([ev, None])

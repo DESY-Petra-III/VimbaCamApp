@@ -142,7 +142,7 @@ class MarkerMenuPlugin(object):
         if isinstance(ev, QtWidgets.QGraphicsSceneMouseEvent):
             tp = self.view.mapToGlobal(self.view.mapFromScene(ev.scenePos()))
         else:
-            tp = self.view.mapToGlobal(self.view.mapFromScene(ev.pos()))
+            tp = ev
         menu.exec_(tp)
 
         w1.deleteLater()

@@ -17,7 +17,7 @@ import re
 import logging
 import pluginbase
 
-from qtpy import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
+from qtpy import QtWidgets, QtCore, QtGui, QtWebEngineWidgets, QtTest
 
 # import PyTango as pt
 

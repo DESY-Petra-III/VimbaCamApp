@@ -43,7 +43,6 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         # color object
         self.colors = ColorTable(parent=self)
 
-
         self.color_frame = None
         self.color_marker = None
 
@@ -58,8 +57,10 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         self.initColorFrame()
         self.initColorMarker()
 
+        # final style corrections
         self.lbl_gain.setCursor(QtCore.Qt.PointingHandCursor)
         self.lbl_exposure.setCursor(QtCore.Qt.PointingHandCursor)
+        self.stw_plugins.setEnabled(False)
 
 
     def settingsFromConfig(self):
@@ -257,6 +258,11 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         except AttributeError:
             pass
 
+        if bstate:
+            self.stw_plugins.setEnabled(True)
+        else:
+            self.stw_plugins.setEnabled(False)
+
         # disable the exposure/gain control
         if bstate:
             self.lbl_exposure.setEnabled(True)
@@ -384,6 +390,7 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         """
         self.btn_playstop.blockSignals(True)
         self.btn_playstop.setChecked(False)
+        self.stw_plugins.setEnabled(False)
         self.btn_playstop.blockSignals(False)
 
     def processExposureGain(self, ev):
@@ -427,7 +434,7 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
             self.btn_playstop.blockSignals(True)
             self.btn_playstop.setEnabled(False)
             self.btn_playstop.setChecked(False)
-
+            self.stw_plugins.setEnabled(False)
             self.lbl_exposure.setEnabled(False)
             self.lbl_gain.setEnabled(False)
 
@@ -525,3 +532,9 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
                 self.ctrl.processPluginIndex(index)
         except AttributeError:
             pass
+
+    def getPlayStopState(self):
+        """
+        Returns the play/stop state for the button indicating aquisition or not
+        """
+        return self.btn_playstop.isChecked()
