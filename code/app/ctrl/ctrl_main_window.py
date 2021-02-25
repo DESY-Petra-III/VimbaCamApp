@@ -962,6 +962,12 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         """
         Processes the show marker menu
         """
-        self.info("Pressed show marker")
+        self.debug("Pressed show marker")
         ev = QtGui.QCursor.pos()
         self.processMarkerMenu([ev, None])
+
+    def processPluginMove(self, ev: QtWidgets.QGraphicsSceneMouseEvent):
+        """
+        Calculates a move with respect to the field of view
+        """
+        # TODO: implement checks and etc.

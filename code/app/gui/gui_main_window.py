@@ -164,6 +164,8 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
         self.view.keyPressEvent = self.processViewKeyPress
         self.view.keyReleaseEvent = self.processViewKeyRelease
 
+        self.scene.mouseReleaseEvent = self.processSceneMouseRelease
+
         self.show()
 
     def processViewWheelEvent(self, ev: QtGui.QWheelEvent):
@@ -340,3 +342,21 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
                 self.ctrl.processShowMarkerMenu()
         except AttributeError:
             pass
+
+    def processSceneMouseRelease(self, ev: QtWidgets.QGraphicsSceneMouseEvent):
+        """
+        Processes plugin move event
+        """
+        btn = ev.button()
+        mods = ev.modifiers()
+
+        if btn == QtCore.Qt.LeftButton and mods == QtCore.Qt.ControlModifier:
+            try:
+                # initiate the move only if the backfeed is running
+                if self.ctrl is not None and self.toolbarw.getPlayStopState():
+                    self.ctrl.processPluginMove(ev)
+            except AttributeError:
+                pass
+            ev.accept()
+        else:
+            QtWidgets.QGraphicsScene.mouseReleaseEvent(self.scene, ev)
