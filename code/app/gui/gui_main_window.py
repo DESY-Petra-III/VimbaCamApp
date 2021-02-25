@@ -279,6 +279,7 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
         if self.toolbarw.getPlayStopState() and ev.key() == QtCore.Qt.Key_Control:
             try:
                 if self.ctrl is not None:
+                    self.reportStatusBarMessage("CTRL is pressed")
                     self.ctrl.processViewCtrlEvent(True)
                     ev.accept()
             except AttributeError:
