@@ -139,11 +139,14 @@ class MarkerMenuPlugin(object):
         a3.setDefaultWidget(w3)
         menu.addAction(a3)
 
+        tp = None
         if isinstance(ev, QtWidgets.QGraphicsSceneMouseEvent):
             tp = self.view.mapToGlobal(self.view.mapFromScene(ev.scenePos()))
-        else:
+        elif isinstance(ev, QtCore.QPoint):
             tp = ev
-        menu.exec_(tp)
+
+        if tp is not None:
+            menu.exec_(tp)
 
         w1.deleteLater()
         w2.deleteLater()
