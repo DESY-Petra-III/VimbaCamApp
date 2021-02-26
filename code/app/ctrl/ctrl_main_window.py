@@ -9,9 +9,11 @@ from app.gui.gui_colors import *
 from app.gui.marker import *
 from app.gui.gui_gain_exposure import *
 from app.worker.file_saver import *
+from app.worker.plugin_executor import *
 
-from app.worker.allied_camera import ThreadCameraAllied, Frame
+from app.worker.allied_camera import ThreadCameraAllied
 from app.worker.allied_camera_test import ThreadCameraAlliedTest
+
 
 __all__ = ["CtrlMainWindow"]
 
@@ -25,7 +27,7 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
     signstatusmsg = QtCore.Signal(object)
     signcamerastate = QtCore.Signal(object)
 
-    QUEUE_STOP_MSG =  QUEUE_STOP_MSG
+    QUEUE_STOP_MSG = QUEUE_STOP_MSG
 
     PENWIDTH_FRAME = 3
     PENCOLOR_FRAME = QtGui.QColor(244, 0, 87)
@@ -152,6 +154,10 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
 
         # flag controlling if CTRL was pressed prior to a mouse click
         self.bviewctrl = False
+
+        # frame or marker
+        self.frame_marker_reference = None
+        self.plugin_index = None
 
     def recordCameraGainExposure(self, gain=None, exposure=None):
         """
@@ -951,6 +957,35 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         else:
             self.reportStatusMessage("Error: no image to save")
 
+    def processReference(self, v):
+        """
+        Sets a reference to a value
+        """
+        self.frame_marker_reference = v
+
+    def processMarkerReference(self):
+        """
+        Sets the calculation reference to marker
+        """
+        k = MARKER_REFERENCE
+        self.debug("Plugin reference is {}".format(k))
+        self.processReference(k)
+
+    def processFrameReference(self):
+        """
+        Sets the calculation reference to frame
+        """
+        k = FRAME_REFERENCE
+        self.debug("Plugin reference is {}".format(k))
+        self.processReference(k)
+
+    def processPluginIndex(self, v):
+        """
+        Sets the plugin index to a value
+        """
+        self.info("Plugin index is {}".format(v))
+        self.plugin_index = v
+
     def processViewCtrlEvent(self, v: bool):
         """
         Keeps track of CTRL key pressed - used for click events handling inside the viewport
@@ -971,3 +1006,24 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         Calculates a move with respect to the field of view
         """
         # TODO: implement checks and etc.
+        if self.plugin_index is not None and self.frame_marker_reference is not None:
+            self.info(ev.scenePos())
+
+            # understand the offset
+            dx, dy = None, None
+            if self.frame_marker_reference == FRAME_REFERENCE:
+                dx, dy = ev.scenePos().x(), ev.scenePos().y()
+            elif self.frame_marker_reference == MARKER_REFERENCE:
+                dx, dy = ev.scenePos().x(), ev.scenePos().y()
+                dx = dx - self.marker.x
+                dy = dy - self.marker.y
+
+            # do useful work if parameters are correct
+            if not None in (dx, dy):
+                plugin = self.config.getPlugins()[self.plugin_index]
+                self.debug("Executing a plugin ({}) with dx {}, dy {}".format(plugin, dx, dy))
+                try:
+                    r = PluginExecutorRunnable(plugin.move_xy, dx, dy)
+                    self.thpool.start(r)
+                except (AttributeError, KeyError) as e:
+                    self.error("Error during plugin start ({}:{})".format(plugin, e))

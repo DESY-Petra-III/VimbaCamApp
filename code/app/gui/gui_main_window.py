@@ -280,6 +280,7 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
             try:
                 if self.ctrl is not None:
                     self.reportStatusBarMessage("CTRL is pressed")
+                    self.view.setCursor(QtCore.Qt.CrossCursor)
                     self.ctrl.processViewCtrlEvent(True)
                     ev.accept()
             except AttributeError:
@@ -293,6 +294,7 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
         if self.toolbarw.getPlayStopState() and ev.key() == QtCore.Qt.Key_Control:
             try:
                 if self.ctrl is not None:
+                    self.view.setCursor(QtCore.Qt.ArrowCursor)
                     self.ctrl.processViewCtrlEvent(False)
                     ev.accept()
             except AttributeError:
@@ -353,7 +355,7 @@ class MainWindow(QtWidgets.QMainWindow, Tester):
 
         if btn == QtCore.Qt.LeftButton and mods == QtCore.Qt.ControlModifier:
             try:
-                # initiate the move only if the backfeed is running
+                # initiate the move only if the livefeed of the camera is running
                 if self.ctrl is not None and self.toolbarw.getPlayStopState():
                     self.ctrl.processPluginMove(ev)
             except AttributeError:

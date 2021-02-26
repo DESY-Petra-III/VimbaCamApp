@@ -267,9 +267,27 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         if bstate:
             self.lbl_exposure.setEnabled(True)
             self.lbl_gain.setEnabled(True)
+
+            if not self.stw_plugins.isHidden():
+                self.processPluginIndex(self.cmb_plugins.currentIndex())
+                if self.rdbtn_frame.isChecked():
+                    self.processFrameReference(True)
+                elif self.rdbtn_marker.isChecked():
+                    self.processMarkerReference(True)
         else:
             self.lbl_exposure.setEnabled(False)
             self.lbl_gain.setEnabled(False)
+
+            self._resetPluginsAndReference()
+
+    def _resetPluginsAndReference(self):
+        """
+        Resets values in the controller with respect to plugins and reference
+        """
+        # sets the
+        if not self.stw_plugins.isHidden():
+            self.processPluginIndex(None)
+            self.processReference(None)
 
     def processShowHideFrame(self, bstate):
         """
@@ -392,6 +410,9 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
         self.btn_playstop.setChecked(False)
         self.stw_plugins.setEnabled(False)
         self.btn_playstop.blockSignals(False)
+
+        # resets values in the controller
+        self._resetPluginsAndReference()
 
     def processExposureGain(self, ev):
         """
@@ -520,6 +541,17 @@ class CameraToolbarWidget(QtWidgets.QWidget, Tester, Ui_Form):
             try:
                 if self.ctrl is not None:
                     self.ctrl.processFrameReference()
+            except AttributeError:
+                pass
+
+    def processReference(self, v):
+        """
+        Sets reference - passes direct values to controller
+        """
+        if self.rdbtn_frame.isChecked():
+            try:
+                if self.ctrl is not None:
+                    self.ctrl.processReference(v)
             except AttributeError:
                 pass
 

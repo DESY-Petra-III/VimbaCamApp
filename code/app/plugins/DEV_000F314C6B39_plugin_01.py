@@ -1,3 +1,5 @@
+from .base_tango import Mover
+
 __all__ = ["get_version", "move_xy"]
 __version__ = "0.0.1"
 __description__ = "Sample Stage YZ"
@@ -16,8 +18,12 @@ def get_description():
     global __description__
     return __description__
 
-def move_xy(dx=None, dy=None):
+def move_xy(*args):
     """
     Performes a movement - must be present
     """
-    pass
+    dx, dy = args
+    print("Moving to dx:dy ({}:{})".format(dx, dy))
+    # x, y, convx, convy - in frame coordinates x is horizontal, y is vertical
+    m = Mover("haspp02oh1:10000/p02/motor/eh2b.42", "haspp02oh1:10000/p02/motor/eh2b.37", -1., 1., brealmove=False)
+    m.run(dx=dx, dy=dy)
