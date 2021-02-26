@@ -1,16 +1,16 @@
 import threading
 
 try:
-    from queue import Queue, Empty
-except ImportError:
     from Queue import Queue, Empty
+except ImportError:
+    from queue import Queue, Empty
 
 try:
     from tango import DeviceProxy, DevFailed, DevState
 except ImportError:
     from PyTango import DeviceProxy, DevFailed, DevState
 
-class Mover(object):
+class TangoMover(object):
     """
     Class wrapping movements for Tango devices
     """
@@ -83,5 +83,3 @@ class Mover(object):
                 self.qquit.task_done()
             except Empty:
                 pass
-
-
