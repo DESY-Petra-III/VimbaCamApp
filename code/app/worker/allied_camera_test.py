@@ -129,7 +129,7 @@ class ThreadCameraAlliedTest(threading.Thread, Tester):
             try:
                 tf = cam.get_feature_by_name(f)
             except VimbaFeatureError:
-                self.error("Feature {} is not available".format(f))
+                self.debug("Feature {} is not available".format(f))
                 continue
 
             value = None
