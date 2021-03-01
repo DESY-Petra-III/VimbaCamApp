@@ -40,7 +40,9 @@ The program is implemented to be used in a *userland* environment, when access t
 ## Libraries and requirenments
 On top of the standard python3 libraries, additional libraries are required:
 
-	pip install numpy PyQt5 qtpy opencv-python
+	pip install numpy PyQt5 PyQtWebEngine qtpy opencv-python pluginbase 
+
+The __PyQtWebEngine__ is required by qtpy.
 
 Vimba API libraries are available within [VimbaSDK](https://www.alliedvision.com/en/products/software.html)  as well as the corresponding documentation describing the details of SDK installation.
 
