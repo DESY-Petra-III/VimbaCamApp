@@ -1005,12 +1005,15 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         """
         Calculates a move with respect to the field of view
         """
-        # TODO: implement checks and etc.
         if self.plugin_index is not None and self.frame_marker_reference is not None:
             self.info(ev.scenePos())
 
             # understand the offset
             dx, dy = None, None
+
+            # need to recalculate to frame rectangle size
+            self.info("Bounding rect {}; pixmap {};".format(self.framerect.boundingRect(), self.pxmap.boundingRect()))
+
             if self.frame_marker_reference == FRAME_REFERENCE:
                 dx, dy = ev.scenePos().x(), ev.scenePos().y()
             elif self.frame_marker_reference == MARKER_REFERENCE:
@@ -1020,6 +1023,13 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
 
             # do useful work if parameters are correct
             if not None in (dx, dy):
+                self.debug("Preexecuting with dx {}, dy {}".format(dx, dy))
+
+                dx = dx / self.framerect.boundingRect().width() * self.pxmap.boundingRect().width()
+                dy = dy / self.framerect.boundingRect().height() * self.pxmap.boundingRect().height()
+
+                self.debug("Executing with dx {}, dy {}".format(dx, dy))
+
                 plugin = self.config.getPlugins()[self.plugin_index]
                 self.debug("Executing a plugin ({}) with dx {}, dy {}".format(plugin, dx, dy))
                 try:
@@ -1027,3 +1037,5 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
                     self.thpool.start(r)
                 except (AttributeError, KeyError) as e:
                     self.error("Error during plugin start ({}:{})".format(plugin, e))
+        else:
+            self.reportStatusMessage("Sorry, no plugin installed")

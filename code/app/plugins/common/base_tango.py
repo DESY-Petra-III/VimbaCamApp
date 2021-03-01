@@ -71,9 +71,10 @@ class TangoMover(object):
             old_pos = d.read_attribute(self.ATTR_POSITION).value
             new_pos = old_pos + dv
 
+            print("Old device {} position {:6.4f}".format(devname, old_pos))
             print("Moving device {} to {:6.4f}".format(devname, new_pos))
             if self.brealmove:
-                d.write_attribute_asynch(new_pos)
+                d.write_attribute_asynch(self.ATTR_POSITION, new_pos)
 
         except (DevFailed, Exception) as e:
             print("Error while working with device ({}): {}".format(devname,  e))
