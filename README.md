@@ -48,7 +48,7 @@ Marker operation:
     
     m - opens menu window for the marker (resizing, repositioning)
 
-Click & Go operation
+Click & Go operation, plugin must be engaged:
 
     CTRL+click drives the plugin to the specifid coordinates
 
