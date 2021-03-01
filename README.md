@@ -37,6 +37,21 @@ Marker size, color, frame size, visibility for the frame and marker are saved in
 
 The program is implemented to be used in a *userland* environment, when access to the administrator user is limited.
 
+## Shortcuts implemented so far
+Field of view operation:
+
+    a | * - fits the observation to the field of view
+    + - zooms in
+    - - zooms out
+
+Marker operation:
+    
+    m - opens menu window for the marker (resizing, repositioning)
+
+Click & Go operation
+
+    CTRL+click drives the plugin to the specifid coordinates
+
 ## Libraries and requirenments
 On top of the standard python3 libraries, additional libraries are required:
 
