@@ -494,15 +494,17 @@ class ThreadCameraAllied(threading.Thread, Tester):
                     if not self._test_cam_exposure_feature():
                         self.debug("Setting camera exposure feature ({})".format(f))
                         self.cam_exposure_feature = f
-                else:
-                    if f == CAMERA_GAIN or f == CAMERA_GAIN_RAW:
-                        tf = CAMERA_GAINMERGED
-                        self.gain = value
+                elif f == CAMERA_GAIN or f == CAMERA_GAIN_RAW:
+                    tf = CAMERA_GAINMERGED
+                    features.setdefault(tf, value)
 
-                        # save the name of the camera gain header
-                        if not self._test_cam_gain_feature():
-                            self.debug("Setting camera gain feature ({})".format(f))
-                            self.cam_gain_feature = f
+                    self.gain = value
+
+                    # save the name of the camera gain header
+                    if not self._test_cam_gain_feature():
+                        self.debug("Setting camera gain feature ({})".format(f))
+                        self.cam_gain_feature = f
+                else:
                     features.setdefault(f, value)
             try:
                 self.feedback.reportCameraFeatures(features)

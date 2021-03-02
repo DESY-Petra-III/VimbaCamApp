@@ -542,7 +542,7 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
                                        self.getDefaultCameraFeature(obj, CAMERA_EXPOSUREMERGED),
                                        self.getDefaultCameraFeature(obj, CAMERA_EXPOSUREMIN),
                                        self.getDefaultCameraFeature(obj, CAMERA_EXPOSUREMAX),
-                                       self.getDefaultCameraFeature(obj, CAMERA_GAIN),
+                                       self.getDefaultCameraFeature(obj, CAMERA_GAINMERGED),
                                        self.getDefaultCameraFeature(obj, CAMERA_GAINMIN),
                                        self.getDefaultCameraFeature(obj, CAMERA_GAINMAX),
                                        self.getDefaultCameraFeature(obj, CAMERA_FREQUENCY),
@@ -575,6 +575,7 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         # merging gain + exposure info
         if len(block_gain) > 0 or len(block_exposure) > 0:
             block_exposure = "Exp./Gain: {} / {}".format(block_exposure, block_gain)
+            self.info("!!! {}".format(block_exposure))
 
         # camera info
         t = [self.id]
