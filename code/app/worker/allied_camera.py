@@ -24,7 +24,7 @@ class ThreadCameraAllied(threading.Thread, Tester):
 
     SYNC_FRAMERATE = 10     # SYNC_SLEEP/SYNC_FRAMERATE - max delay
     SYNC_SLEEP = 1.         # seconds
-    SYNC_FRAMETIMEOUT = 2.  # seconds
+    SYNC_FRAMETIMEOUT = 10.  # seconds - important timeout frame control
 
     CAMERA_FEATURE_UPDATE = 1. # delay between reported camera feature updates
 
