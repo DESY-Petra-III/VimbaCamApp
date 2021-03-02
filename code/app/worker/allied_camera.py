@@ -69,6 +69,7 @@ class ThreadCameraAllied(threading.Thread, Tester):
 
         # camera exposure feature name
         self.cam_exposure_feature = None
+        self.cam_gain_feature = None
 
         # frame rate
         self.frame_rate_real = 0.
@@ -113,6 +114,12 @@ class ThreadCameraAllied(threading.Thread, Tester):
     def _test_cam_exposure_feature(self):
         res = False
         if self.cam_exposure_feature is not None:
+            res = True
+        return res
+
+    def _test_cam_gain_feature(self):
+        res = False
+        if self.cam_gain_feature is not None:
             res = True
         return res
 
@@ -209,7 +216,7 @@ class ThreadCameraAllied(threading.Thread, Tester):
 
                     if cam is None:
                         # handle an issue of camera accessibility
-                        self.handle_error("Camera is not available")
+                        self.handle_error("Camera is not available 01")
                         return
 
                     if not self.setup_camera(cam):
@@ -229,9 +236,9 @@ class ThreadCameraAllied(threading.Thread, Tester):
                         msg = "Camera error: {}".format(e)
                         self.handle_error(msg)
 
-            except AttributeError:
+            except IOError:
                 # handle an issue of camera accessibility
-                self.handle_error("Camera is not available")
+                self.handle_error("Camera is not available 02")
                 return
             except VimbaCameraError:
                 self.handle_error("Issue with reading the camera. Is VimbaViewer is running?")
@@ -320,9 +327,13 @@ class ThreadCameraAllied(threading.Thread, Tester):
                                     elif self.cam_exposure_feature == CAMERA_EXPOSURE:
                                         self.debug("Setting ({} -> {})".format(k, v))
                                         cam.ExposureTime.set(v)
-                                elif k == CAMERA_GAIN:
-                                    self.debug("Setting ({} -> {})".format(k, v))
-                                    cam.Gain.set(v)
+                                elif k == CAMERA_GAINMERGED and self._test_cam_gain_feature():
+                                    if self.cam_gain_feature == CAMERA_GAIN_RAW:
+                                        self.debug("Setting ({} -> {})".format(k, v))
+                                        cam.GainRaw.set(v)
+                                    elif self.cam_gain_feature == CAMERA_GAIN:
+                                        self.debug("Setting ({} -> {})".format(k, v))
+                                        cam.Gain.set(v)
                                 elif k == CAMERA_GAIN_MODE:
                                     self.debug("Setting ({} -> {})".format(k, v))
                                     cam.GainAuto.set(v)
@@ -446,7 +457,7 @@ class ThreadCameraAllied(threading.Thread, Tester):
         """
         if time.time()-self.ts_features > self.CAMERA_FEATURE_UPDATE:
             feature_list = (CAMERA_EXPOSUREABS, CAMERA_EXPOSURE_MODE,
-                            CAMERA_GAIN, CAMERA_GAIN_MODE,
+                            CAMERA_GAIN, CAMERA_GAIN_RAW, CAMERA_GAIN_MODE,
                             CAMERA_GAINMAX, CAMERA_GAINMIN,
                             CAMERA_EXPOSURE,
                             CAMERA_WIDTH, CAMERA_HEIGHT)
@@ -471,6 +482,9 @@ class ThreadCameraAllied(threading.Thread, Tester):
                 except (AttributeError, VimbaFeatureError):
                     pass
 
+                if value is None:
+                    continue
+
                 if f == CAMERA_EXPOSURE or f == CAMERA_EXPOSUREABS:
                     tf = CAMERA_EXPOSUREMERGED
                     features.setdefault(tf, value)
@@ -481,10 +495,15 @@ class ThreadCameraAllied(threading.Thread, Tester):
                         self.debug("Setting camera exposure feature ({})".format(f))
                         self.cam_exposure_feature = f
                 else:
-                    if f == CAMERA_GAIN:
+                    if f == CAMERA_GAIN or f == CAMERA_GAIN_RAW:
+                        tf = CAMERA_GAINMERGED
                         self.gain = value
-                    features.setdefault(f, value)
 
+                        # save the name of the camera gain header
+                        if not self._test_cam_gain_feature():
+                            self.debug("Setting camera gain feature ({})".format(f))
+                            self.cam_gain_feature = f
+                    features.setdefault(f, value)
             try:
                 self.feedback.reportCameraFeatures(features)
             except AttributeError:
