@@ -236,9 +236,9 @@ class ThreadCameraAllied(threading.Thread, Tester):
                         msg = "Camera error: {}".format(e)
                         self.handle_error(msg)
 
-            except IOError:
+            except AttributeError as e:
                 # handle an issue of camera accessibility
-                self.handle_error("Camera is not available 02")
+                self.handle_error("Camera is not available 02: {}".format(e))
                 return
             except VimbaCameraError:
                 self.handle_error("Issue with reading the camera. Is VimbaViewer is running?")
