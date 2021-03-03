@@ -1006,13 +1006,13 @@ class CtrlMainWindow(QtCore.QObject, Tester, MarkerMenuPlugin):
         Calculates a move with respect to the field of view
         """
         if self.plugin_index is not None and self.frame_marker_reference is not None:
-            self.info(ev.scenePos())
+            self.debug("Scene position ({})".format(ev.scenePos()))
 
             # understand the offset
             dx, dy = None, None
 
             # need to recalculate to frame rectangle size
-            self.info("Bounding rect {}; pixmap {};".format(self.framerect.boundingRect(), self.pxmap.boundingRect()))
+            self.debug("Bounding rect {}; pixmap {};".format(self.framerect.boundingRect(), self.pxmap.boundingRect()))
 
             if self.frame_marker_reference == FRAME_REFERENCE:
                 dx, dy = ev.scenePos().x(), ev.scenePos().y()
