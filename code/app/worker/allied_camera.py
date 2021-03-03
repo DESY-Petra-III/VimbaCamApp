@@ -374,7 +374,8 @@ class ThreadCameraAllied(threading.Thread, Tester):
             except (VimbaTimeout, VimbaFeatureError) as e:
                 msg = "Vimba Timeout message {}".format(e)
                 self.error(msg)
-                self.handle_error(msg)
+                # TODO - handle gracefully the timeouts
+                #  self.handle_error(msg)
                 continue
 
             tstop = time.time()
