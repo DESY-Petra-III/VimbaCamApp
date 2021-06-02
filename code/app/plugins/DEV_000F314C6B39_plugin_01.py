@@ -30,5 +30,6 @@ def move_xy(*args):
 
     # x, y, convx, convy - in frame coordinates x is horizontal, y is vertical
     corr = 1e-4 * 4.62
-    m = TangoMover("haspp02oh1:10000/p02/motor/eh2b.42", "haspp02oh1:10000/p02/motor/eh2b.37", -corr, corr, brealmove=True)
+    m = TangoMover("haspp02oh1:10000/p02/piezopic867motor/eh2b.01", "haspp02oh1:10000/p02/motor/eh2b.37", -corr, corr, brealmove=True)
+    # TangoMover("haspp02oh1:10000/p02/motor/eh2b.42", "haspp02oh1:10000/p02/motor/eh2b.37", -corr, corr, brealmove=True)
     m.run(dx=dx, dy=dy)
